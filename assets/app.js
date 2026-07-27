@@ -6030,7 +6030,10 @@ function exportRelationExtractionTable() {
   const filteredResults = relationFilteredExtractionResults();
   if (!filteredResults.length) return;
   const header = [
-    "compound_or_gene_name",
+    "protein_or_compound_name",
+    "search_engine",
+    "similarity_score",
+    "enrichments",
     "pmcid",
     "relation",
     "context",
@@ -6038,24 +6041,38 @@ function exportRelationExtractionTable() {
     "entity_linked_taxon_tissue_context",
     "overlap_taxon_tissue_context",
     "attribute_type",
-    "ontology_normalized_relation",
-    "similarity_score",
-    "similarity_score_type"
+    "ontology_normalized_relation"
   ];
   const sortedResults = [...filteredResults].sort((a, b) => (b.score || 0) - (a.score || 0));
-  const rows = sortedResults.map((row) => [
-    row.query_name,
-    row.pmcid,
-    row.relation,
-    row.context,
-    row.event_taxon_tissue_context,
-    row.entity_linked_taxon_tissue_context,
-    row.overlap_taxon_tissue_context,
-    row.attribute_type,
-    row.normalized_relation,
-    row.score != null ? row.score : "",
-    row.score_type || ""
-  ]);
+  const rows = sortedResults.map((row) => {
+    const match = (state.relationSequenceMatches || []).concat(state.relationCompoundMatches || [])
+      .find(m => (m.entity_label || m.term) === row.query_name);
+    
+    const enrichments = match?.entity?.enrichments 
+      ? uniqueStrings(match.entity.enrichments.map(e => e.trait_label || e.trait_concept)).join(", ")
+      : "";
+      
+    const searchEngine = match?.search_method === 'embed2graph' ? 'Embedding Search' 
+      : match?.search_method === 'seq2graph' ? 'Sequence Search' 
+      : match?.source || row.score_type || "";
+
+    const similarityScore = match?.kmer_score != null ? match.kmer_score : (row.score != null ? row.score : "");
+
+    return [
+      row.query_name,
+      searchEngine,
+      similarityScore,
+      enrichments,
+      row.pmcid,
+      row.relation,
+      row.context,
+      row.event_taxon_tissue_context,
+      row.entity_linked_taxon_tissue_context,
+      row.overlap_taxon_tissue_context,
+      row.attribute_type,
+      row.normalized_relation
+    ];
+  });
   const content = [header, ...rows].map((row) => row.map(tsvCell).join("\t")).join("\n") + "\n";
   downloadFile("psfd_relationship_attributes.tsv", content, "text/tab-separated-values");
 }
