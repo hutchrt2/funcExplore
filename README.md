@@ -1,12 +1,12 @@
-# PSFD Sequence Annotation Demo
+# funcExplore
 
-This repository contains the front-end user interface for the Plant Stress Mechanism Map (PSMM) system. It connects to the locally running PSMM FastAPI server to allow users to search, annotate, and explore plant stress biological entities and their relationships.
+This repository contains the front-end user interface for the funcSearch system. It connects to the locally running funcSearch FastAPI server to allow users to search, annotate, and explore plant stress biological entities and their relationships.
 
 ## Features
 
-- **Live Sequence Matching**: Connects to the PSMM backend (`http://localhost:8999`) to perform protein sequence searches.
+- **Live Sequence Matching**: Connects to the funcSearch backend (`http://localhost:8999`) to perform protein sequence searches.
 - **Support for Multiple Search Engines**: Includes built-in support for searching via **ESM-C (Embed2Graph)** and **MMseqs2 (Seq2Graph)**.
-- **Dynamic Relationship Extraction**: Extracts comprehensive knowledge graph relationships from the PSMM database for any given protein hit or user query.
+- **Dynamic Relationship Extraction**: Extracts comprehensive knowledge graph relationships from the funcSearch database for any given protein hit or user query.
 - **Adjustable Parameters**: Users can set parameters like minimum similarity threshold for ESM-C and E-value for MMseqs2 directly from the UI.
 - **Sequence Hit Stacking**: Stacks redundant hits from the same plant, presenting them cleanly in a horizontally scrollable carousel.
 - **Rich Visualization**: Displays evidence-supported relations and hypotheses with context (tissues, species, pathways).
