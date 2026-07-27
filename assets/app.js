@@ -5281,7 +5281,9 @@ function relationOutputContextItemsByKind(row, kind) {
     row.event_taxon_tissue_context,
     row.entity_linked_taxon_tissue_context,
     row.overlap_taxon_tissue_context
-  ].flatMap(splitRelationOutputItems).filter((item) => relationOutputContextKind(item).key === kind));
+  ].flatMap(splitRelationOutputItems)
+   .filter((item) => relationOutputContextKind(item).key === kind)
+   .map((item) => item.replace(/\*+$/, '')));
 }
 
 function relationOutputBestContextItems(row) {
