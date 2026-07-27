@@ -404,7 +404,7 @@ function enrichmentBadges(enrichments, limit = 14) {
     const mappedType = categoryToEntityPalette[cat] || 'unknown';
     const color = colorForEntity(mappedType);
     const label = e.trait_label || e.trait_concept;
-    return `<span class="badge enrichment" style="border-left: 3px solid ${color}; padding-left: 6px;" title="Category: ${esc(cat)}">${esc(clean(label))}</span>`;
+    return `<span class="badge enrichment" style="border-left: 3px solid ${color}; padding-left: 6px;" title="Category: ${esc(cat)}">${esc(clean(label))} (${esc(concept)})</span>`;
   }).join("");
 
   return shown + (uniqueFiltered.length > limit ? `<span class="badge">+${uniqueFiltered.length - limit}</span>` : "");
