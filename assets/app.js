@@ -1,5 +1,5 @@
 "use strict";
-window.PSMM_API_BASE = 'http://localhost:8999';
+window.PSMM_API_BASE = 'https://badge-renewed-oat.ngrok-free.dev';
 
 const state = {
   manifest: null,
