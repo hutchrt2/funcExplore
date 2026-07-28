@@ -5284,7 +5284,32 @@ function relationOutputContextItemsByKind(row, kind) {
     row.overlap_taxon_tissue_context
   ].flatMap(splitRelationOutputItems)
    .filter((item) => relationOutputContextKind(item).key === kind)
-   .map((item) => item.replace(/\*+$/, '')));
+   .map((item) => {
+     let str = item.replace(/\*/g, '').replace(/\s+/g, ' ').trim();
+     const lower = str.toLowerCase();
+     if (kind === "species" && !/ncbitaxon:\d+/i.test(str)) {
+       if (lower.includes("thaliana") || lower.includes("arabidopsis")) return "Arabidopsis thaliana (NCBITaxon:3702)";
+       if (lower.includes("oryza") || lower === "rice") return "Oryza sativa (NCBITaxon:4530)";
+       if (lower.includes("zea") || lower === "maize" || lower === "corn") return "Zea mays (NCBITaxon:4577)";
+       if (lower.includes("solanum") || lower === "tomato") return "Solanum lycopersicum (NCBITaxon:4081)";
+       if (lower.includes("triticum") || lower === "wheat") return "Triticum aestivum (NCBITaxon:4565)";
+       if (lower.includes("glycine") || lower === "soybean") return "Glycine max (NCBITaxon:3847)";
+       if (lower.includes("brachypodium")) return "Brachypodium distachyon (NCBITaxon:15368)";
+     } else if (kind === "tissue") {
+       if (lower === "leaves") return "leaf";
+       if (lower === "roots") return "root";
+       if (lower === "shoots") return "shoot";
+       if (lower === "stems") return "stem";
+       if (lower === "seeds") return "seed";
+       if (lower === "seedlings") return "seedling";
+       if (lower === "flowers") return "flower";
+       if (lower === "fruits") return "fruit";
+       if (lower === "tubers") return "tuber";
+       if (lower === "cells") return "cell";
+       if (lower === "organs") return "organ";
+     }
+     return str;
+   }));
 }
 
 function relationOutputBestContextItems(row) {
