@@ -870,7 +870,7 @@ async function init() {
 
 async function fetchJson(path) {
   const url = path.startsWith('http') ? path : `${window.PSMM_API_BASE}/api/${path}`;
-  const response = await fetch(url, { cache: "no-store" });
+  const response = await fetch(url, { cache: "no-store", headers: { "ngrok-skip-browser-warning": "true" } });
   if (!response.ok) throw new Error(`Could not load ${url}: ${response.status}`);
   return response.json();
 }
@@ -5684,7 +5684,7 @@ async function runRelationExtraction() {
     // Fetch the relationship rows directly from the backend API
     const extractResponse = await fetch(`${window.PSMM_API_BASE}/api/extract`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
       body: JSON.stringify({
         compounds: isCompoundTab ? state.relationCompoundInput : "",
         fasta: (!isCompoundTab && !isEnrichmentTab) ? state.relationFastaInput : "",
@@ -5747,7 +5747,7 @@ async function relationCompoundEntities() {
   
   const response = await fetch(`${window.PSMM_API_BASE}/api/resolve_entities`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
     body: JSON.stringify({ terms: terms, category: "auto" })
   });
   if (!response.ok) throw new Error("Failed to resolve compound entities.");
@@ -5766,7 +5766,7 @@ async function relationFastaMatches() {
     try {
       const response = await fetch(`${window.PSMM_API_BASE}/search`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
         body: JSON.stringify({
           sequence: query.sequence,
           method: state.relationSearchMethod,
@@ -5831,7 +5831,7 @@ async function relationEnrichmentMatches() {
     try {
       const response = await fetch(`${window.PSMM_API_BASE}/api/search_by_enrichment`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
         body: JSON.stringify({ term })
       });
       if (!response.ok) throw new Error("Failed to search by enrichment.");
@@ -8293,7 +8293,7 @@ async function loadGlobalPathIndex() {
       console.error("Could not load database stats:", error);
     }
     try {
-      const response = await fetch(`${window.PSMM_API_BASE}/api/enriched_traits`);
+      const response = await fetch(`${window.PSMM_API_BASE}/api/enriched_traits`, { headers: { "ngrok-skip-browser-warning": "true" } });
       if (response.ok) {
         state.globalEnrichments = await response.json();
       } else {
