@@ -403,7 +403,8 @@ function enrichmentBadges(enrichments, limit = 14) {
     const cat = e.category || 'molecular_traits';
     const mappedType = categoryToEntityPalette[cat] || 'unknown';
     const color = colorForEntity(mappedType);
-    const label = e.trait_label || e.trait_concept;
+    const label = e.label || e.trait_label || e.trait_concept || e.ontology_id || 'Unknown';
+    const concept = e.ontology_id || e.trait_concept || '';
     return `<span class="badge enrichment" style="border-left: 3px solid ${color}; padding-left: 6px;" title="Category: ${esc(cat)}">${esc(clean(label))} (${esc(concept)})</span>`;
   }).join("");
 
