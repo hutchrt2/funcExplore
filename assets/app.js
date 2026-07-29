@@ -5213,8 +5213,23 @@ function relationOutputFilterOptions(rows) {
   const compoundEnrichments = (state.relationCompoundMatches || []).flatMap(c => (c.entity?.enrichments || []).map(e => e.trait_label || e.trait_concept));
   const enrichments = uniqueStrings([...seqEnrichments, ...compoundEnrichments].filter(Boolean)).sort((a, b) => a.localeCompare(b));
   const attributes = uniqueStrings(rows.map((row) => row.attribute_type).filter(Boolean)).sort((a, b) => a.localeCompare(b));
-  const species = uniqueStrings(rows.flatMap((row) => relationOutputContextItemsByKind(row, "species"))).sort((a, b) => a.localeCompare(b));
-  const tissues = uniqueStrings(rows.flatMap((row) => relationOutputContextItemsByKind(row, "tissue"))).sort((a, b) => a.localeCompare(b));
+  
+  const speciesMap = new Map();
+  rows.flatMap((row) => relationOutputContextItemsByKind(row, "species")).forEach(s => {
+    const match = s.match(/\((NCBITaxon:\d+)\)/i);
+    const key = match ? match[1].toUpperCase() : s.toLowerCase();
+    if (!speciesMap.has(key)) speciesMap.set(key, s);
+  });
+  const species = Array.from(speciesMap.values()).sort((a, b) => a.localeCompare(b));
+
+  const tissueMap = new Map();
+  rows.flatMap((row) => relationOutputContextItemsByKind(row, "tissue")).forEach(t => {
+    const match = t.match(/\(([^)]+:\d+)\)/i);
+    const key = match ? match[1].toUpperCase() : t.toLowerCase();
+    if (!tissueMap.has(key)) tissueMap.set(key, t);
+  });
+  const tissues = Array.from(tissueMap.values()).sort((a, b) => a.localeCompare(b));
+
   return { enrichments, attributes, species, tissues };
 }
 
@@ -5268,9 +5283,16 @@ function relationFilteredExtractionResults() {
       }
     }
     
+    const contextItemMatch = (item1, item2) => {
+      const match1 = String(item1).match(/\(([^)]+:\d+)\)/i);
+      const match2 = String(item2).match(/\(([^)]+:\d+)\)/i);
+      if (match1 && match2) return match1[1].toUpperCase() === match2[1].toUpperCase();
+      return String(item1).toLowerCase() === String(item2).toLowerCase();
+    };
+
     if (state.relationOutputAttributeFilter !== "all" && row.attribute_type !== state.relationOutputAttributeFilter) return false;
-    if (state.relationOutputSpeciesFilter !== "all" && !relationOutputContextItemsByKind(row, "species").includes(state.relationOutputSpeciesFilter)) return false;
-    if (state.relationOutputTissueFilter !== "all" && !relationOutputContextItemsByKind(row, "tissue").includes(state.relationOutputTissueFilter)) return false;
+    if (state.relationOutputSpeciesFilter !== "all" && !relationOutputContextItemsByKind(row, "species").some(s => contextItemMatch(s, state.relationOutputSpeciesFilter))) return false;
+    if (state.relationOutputTissueFilter !== "all" && !relationOutputContextItemsByKind(row, "tissue").some(t => contextItemMatch(t, state.relationOutputTissueFilter))) return false;
     if (state.relationOutputDirectOnly && !splitRelationOutputItems(row.context).length) return false;
     if (state.relationOutputBestContextOnly && !relationOutputBestContextItems(row).length) return false;
     return true;
