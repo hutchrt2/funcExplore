@@ -5209,9 +5209,23 @@ function relationOutputSelect(label, key, values) {
 }
 
 function relationOutputFilterOptions(rows) {
-  const seqEnrichments = (state.relationSequenceMatches || []).flatMap(m => (m.entity?.enrichments || []).map(e => e.trait_label || e.trait_concept));
-  const compoundEnrichments = (state.relationCompoundMatches || []).flatMap(c => (c.entity?.enrichments || []).map(e => e.trait_label || e.trait_concept));
-  const enrichments = uniqueStrings([...seqEnrichments, ...compoundEnrichments].filter(Boolean)).sort((a, b) => a.localeCompare(b));
+  const allEnrichments = [
+    ...(state.relationSequenceMatches || []),
+    ...(state.relationCompoundMatches || [])
+  ].flatMap(m => m.entity?.enrichments || []);
+  
+  const enrichmentMap = new Map();
+  allEnrichments.forEach(e => {
+    const concept = e.trait_concept?.toUpperCase() || e.ontology_id?.toUpperCase();
+    const label = e.trait_label || e.trait_concept || e.ontology_id;
+    if (concept) {
+      if (!enrichmentMap.has(concept)) enrichmentMap.set(concept, label);
+    } else if (label) {
+      if (!enrichmentMap.has(label.toLowerCase())) enrichmentMap.set(label.toLowerCase(), label);
+    }
+  });
+  const enrichments = Array.from(enrichmentMap.values()).sort((a, b) => a.localeCompare(b));
+
   const attributes = uniqueStrings(rows.map((row) => row.attribute_type).filter(Boolean)).sort((a, b) => a.localeCompare(b));
   
   const speciesMap = new Map();
@@ -5263,8 +5277,8 @@ function relationFilteredExtractionResults() {
       const enrichmentTerm = state.relationOutputEnrichmentFilter.toLowerCase();
       const allEnrichmentObjects = (state.relationSequenceMatches || []).concat(state.relationCompoundMatches || [])
         .flatMap(m => m.entity?.enrichments || []);
-      const matchedObject = allEnrichmentObjects.find(e => (e.trait_label || e.trait_concept).toLowerCase() === enrichmentTerm);
-      const matchedConcept = matchedObject?.trait_concept?.toLowerCase();
+      const matchedObject = allEnrichmentObjects.find(e => (e.trait_label || e.trait_concept || e.ontology_id || "").toLowerCase() === enrichmentTerm);
+      const matchedConcept = (matchedObject?.trait_concept || matchedObject?.ontology_id)?.toLowerCase();
 
       const filterMatches = (text) => {
         if (!text) return false;
