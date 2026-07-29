@@ -194,7 +194,7 @@ function fmt(value) {
 }
 
 function clean(value) {
-  return String(value || "unknown").replace(/_event$/, "").replaceAll("_", " ");
+  return String(value || "unknown").replace(/_event$/, "").replaceAll("_", " ").replace(/\*+$/, "");
 }
 
 function cleanOptionalDisplay(value) {
@@ -4162,6 +4162,7 @@ function stripOntologyIds(value) {
     .replace(/\s*\|\s*/g, " | ")
     .replace(/\s+/g, " ")
     .replace(/^\s*\|\s*|\s*\|\s*$/g, "")
+    .replace(/\*+$/, "")
     .trim();
 }
 
@@ -6100,7 +6101,17 @@ function exportRelationExtractionTable() {
     ];
   });
   const content = [header, ...rows].map((row) => row.map(tsvCell).join("\t")).join("\n") + "\n";
-  downloadFile("psfd_relationship_attributes.tsv", content, "text/tab-separated-values");
+  
+  let filename = "psfd_relationship_attributes.tsv";
+  const firstRow = rows[0];
+  if (firstRow) {
+    const pName = String(firstRow[0] || "protein").replace(/[^a-z0-9]/gi, '_');
+    const sEngine = String(firstRow[1] || "exact_match").replace(/[^a-z0-9]/gi, '_');
+    const sScore = firstRow[2] !== "" ? Math.round(Number(firstRow[2]) * 100) : 100;
+    filename = `${pName}_${sEngine}_${sScore}.tsv`;
+  }
+
+  downloadFile(filename, content, "text/tab-separated-values");
 }
 
 function tsvCell(value) {
