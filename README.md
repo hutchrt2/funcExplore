@@ -13,9 +13,9 @@ This repository contains the front-end user interface for the funcSearch system.
 
 ## Setup & Usage
 
-To use this front-end interface, you must first have the PSMM backend server running.
+To use this front-end interface, you must first have the funcSearch backend server running.
 
-1. Ensure the PSMM backend server is active (typically running on `http://localhost:8999`).
+1. Ensure the funcSearch backend server is active (typically running on `http://localhost:8999`).
 2. Serve this directory using any standard HTTP server. For example:
    ```bash
    # Using Python's built-in HTTP server
@@ -34,4 +34,4 @@ window.PSMM_API_BASE = 'https://api.yourdomain.com';
 ```
 
 ## Note on Legacy Code
-Previous static data building scripts have been removed as this application now dynamically relies on the live PSMM API server rather than statically built JSON bundles.
+Previous static data building scripts have been removed as this application now dynamically relies on the live funcSearch API server rather than statically built JSON bundles.
