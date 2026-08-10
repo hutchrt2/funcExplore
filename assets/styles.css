@@ -7154,7 +7154,7 @@ body[data-tab="discover"] .main-panel {
   }
 }
 
-/* PSFD FastAPI Integration Styles */
+/* funcMap FastAPI Integration Styles */
 .relation-subtabs-container {
   display: flex;
   gap: 8px;

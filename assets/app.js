@@ -1319,7 +1319,7 @@ function renderFilters() {
     els.filterPanel.innerHTML = `
       <div class="compact-card">
         <strong>Annotation</strong>
-        <span class="muted">Paste genes, proteins, compounds, aliases, or ontology IDs to map them to PSFD records.</span>
+        <span class="muted">Paste genes, proteins, compounds, aliases, or ontology IDs to map them to funcMap records.</span>
       </div>
     `;
     return;
@@ -2003,7 +2003,7 @@ function renderGlobalEntityOverview() {
       <div class="hero-title">
         <div>
           <h2>All-Paper Entity Browser</h2>
-          <p>Search genes, compounds, traits, conditions, and ontology IDs across the full PSFD demo database.</p>
+          <p>Search genes, compounds, traits, conditions, and ontology IDs across the full funcMap demo database.</p>
         </div>
         <div>${badges(loaded ? [`${fmt(matches.length)} matches`, `${fmt(paperCount)} papers`] : ["loading global index"])}</div>
       </div>
@@ -4881,7 +4881,7 @@ function renderDiscoverWorkbench() {
     <section class="annotation-page">
       <div class="hero-title">
         <div>
-          <h2>PSFD Relationship Annotation</h2>
+          <h2>funcMap Relationship Annotation</h2>
           <p>Paste compound names or protein FASTA sequences, choose the biological attributes you need, then download endpoint relationships with context and ontology-normalized triples.</p>
         </div>
         <div data-annotation-stats>${badges(ready ? [`${fmt(stats.entities || 0)} entities`, `${fmt(stats.concepts || 0)} ontology IDs`, `${fmt(state.manifest?.papers?.length || 0)} papers`] : ["loading database"])}</div>
@@ -4892,7 +4892,7 @@ function renderDiscoverWorkbench() {
           <span>01</span>
           <div>
             <h3>Compound and FASTA relationship extraction</h3>
-            <small>Endpoint triples from PSFD. FASTA homology search is processed on the FastAPI server.</small>
+            <small>Endpoint triples from funcMap. FASTA homology search is processed on the FastAPI server.</small>
           </div>
         </div>
 
@@ -4975,7 +4975,7 @@ function renderDiscoverWorkbench() {
 
         <div class="attribute-filter-panel">
           <div>
-            <h4>Choose PCO/PSFD attributes to extract for the submitted entities</h4>
+            <h4>Choose PCO/funcMap attributes to extract for the submitted entities</h4>
             <small>Only triples where the submitted compound or matched protein is entity 1 or entity 2 are exported.</small>
           </div>
           <div class="attribute-grid">
@@ -5000,7 +5000,7 @@ function renderDiscoverWorkbench() {
           <button class="mini-button primary-action" type="button" data-relation-extract-action="extract">Extract relationships</button>
           <button class="mini-button" type="button" data-relation-extract-action="download" ${state.relationExtractionResults.length ? "" : "disabled"}>Download tab-delimited file</button>
         </div>
-        <div class="annotation-status ${(state.relationExtractionStatus || "").includes("...") ? "loading" : ""}">${esc(state.relationExtractionStatus || "Submit compound names or protein FASTA sequences to extract PSFD relationships.")}</div>
+        <div class="annotation-status ${(state.relationExtractionStatus || "").includes("...") ? "loading" : ""}">${esc(state.relationExtractionStatus || "Submit compound names or protein FASTA sequences to extract funcMap relationships.")}</div>
         ${renderRelationExtractionResults()}
       </section>
     </section>
@@ -5162,8 +5162,8 @@ function relationOutputHelpDrawer() {
     <details class="relation-output-help">
       <summary>How to read this table</summary>
       <div class="relation-output-help-grid">
-        <div><strong>Query</strong><span>The submitted compound or the closest PSFD-linked protein matched from FASTA.</span></div>
-        <div><strong>Relation</strong><span>A PSFD triple where the query appears as entity 1 or entity 2.</span></div>
+        <div><strong>Query</strong><span>The submitted compound or the closest funcMap-linked protein matched from FASTA.</span></div>
+        <div><strong>Relation</strong><span>A funcMap triple where the query appears as entity 1 or entity 2.</span></div>
         <div><strong>Attribute</strong><span>The biological category of the other endpoint, filtered by your selected attributes.</span></div>
         <div><strong>Context to use</strong><span>The best compact context view. Open Compare sources to audit relation, event, and entity-linked context.</span></div>
       </div>
@@ -5772,7 +5772,7 @@ async function runRelationExtraction() {
       + parseFastaRecords(state.relationFastaInput).length 
       + (isEnrichmentTab && state.relationEnrichmentInput ? 1 : 0);
     state.relationExtractionStatus = rows.length
-      ? `${fmt(rows.length)} relationship rows extracted from ${fmt(queryEntities.length)} matched PSFD entities.`
+      ? `${fmt(rows.length)} relationship rows extracted from ${fmt(queryEntities.length)} matched funcMap entities.`
       : submittedCount
         ? "No endpoint relationships matched the selected attribute filters."
         : "Enter at least one compound name, protein FASTA sequence, or enrichment term.";
@@ -6059,10 +6059,10 @@ async function setRelationExtractionExample(kind) {
   state.relationSelectedMatchEntity = null;
   resetRelationOutputFilters();
   state.relationExtractionStatus = kind === "fasta" || kind === "exact-fasta"
-    ? "Loaded an exact OsMYB55 FASTA record from the PSFD-linked sequence database."
+    ? "Loaded an exact OsMYB55 FASTA record from the funcMap-linked sequence database."
     : kind === "homolog-fasta"
-      ? "Loaded a non-identical OsMYB55-like FASTA query derived from a PSFD-linked sequence to demonstrate homolog matching."
-      : "Example loaded. Click Extract relationships to retrieve endpoint triples from the PSFD data.";
+      ? "Loaded a non-identical OsMYB55-like FASTA query derived from a funcMap-linked sequence to demonstrate homolog matching."
+      : "Example loaded. Click Extract relationships to retrieve endpoint triples from the funcMap data.";
   render();
 }
 
@@ -6211,7 +6211,7 @@ function buildAnnotationRow(term, entity, matchCount = 0, matches = []) {
       type: "",
       pmcid: "",
       normalized: "",
-      annotation: "No PSFD match",
+      annotation: "No funcMap match",
       evidence: "",
       data: "",
       matchCount,
@@ -6244,7 +6244,7 @@ function annotationSummaryCard(row) {
             <span>Input</span>
             <h4>${esc(row.term)}</h4>
           </div>
-          <strong>No PSFD match</strong>
+          <strong>No funcMap match</strong>
         </div>
         <p>Try a canonical gene ID, protein name, compound name, alias, or ontology ID.</p>
       </article>
@@ -6422,7 +6422,7 @@ function annotationMeaningLabel(entity, concept = null) {
 function annotationMeaningDetail(entity, ids, records) {
   const pieces = [];
   if (ids[0]) pieces.push(ids[0]);
-  pieces.push(`${fmt(records.length || 1)} PSFD record${(records.length || 1) === 1 ? "" : "s"}`);
+  pieces.push(`${fmt(records.length || 1)} funcMap record${(records.length || 1) === 1 ? "" : "s"}`);
   const papers = uniqueStrings((records.length ? records : [entity]).map((record) => record.pmcid).filter(Boolean));
   if (papers.length) pieces.push(`${fmt(papers.length)} paper${papers.length === 1 ? "" : "s"}`);
   return pieces.join(" | ");
@@ -6616,12 +6616,12 @@ function annotationPlainSummary(entity, relations, mechanisms, contexts, ontolog
     pieces.push(`${name} is annotated as ${type}`);
   }
   if (records.length > 1 && ontology?.id) {
-    pieces.push(`This summary aggregates ${fmt(records.length)} PSFD record${records.length === 1 ? "" : "s"} from ${fmt(papers.length)} paper${papers.length === 1 ? "" : "s"} that share ${ontology.id}`);
+    pieces.push(`This summary aggregates ${fmt(records.length)} funcMap record${records.length === 1 ? "" : "s"} from ${fmt(papers.length)} paper${papers.length === 1 ? "" : "s"} that share ${ontology.id}`);
   }
   if (mechanismStatements.length) {
-    pieces.push(`The clearest PSFD evidence is ${mechanismStatements.join("; ")}`);
+    pieces.push(`The clearest funcMap evidence is ${mechanismStatements.join("; ")}`);
   } else {
-    pieces.push(`PSFD has ${fmt(relations.length)} extracted relation${relations.length === 1 ? "" : "s"}, but no direct mechanistic relation was extracted for this entity`);
+    pieces.push(`funcMap has ${fmt(relations.length)} extracted relation${relations.length === 1 ? "" : "s"}, but no direct mechanistic relation was extracted for this entity`);
   }
   if (contextNames.length) pieces.push(`Study contexts include ${contextNames.join(", ")}`);
   return `${pieces.map((piece) => String(piece).replace(/[\s.]+$/g, "")).join(". ")}.`;
@@ -7743,7 +7743,7 @@ function computeAnnotationEnrichment() {
     });
   });
 
-  addSignal(rows, "Coverage", "Matched entities", selected.length, `${fmt(selected.length)} submitted entities matched PSFD records.`, selected);
+  addSignal(rows, "Coverage", "Matched entities", selected.length, `${fmt(selected.length)} submitted entities matched funcMap records.`, selected);
   addSignal(rows, "Coverage", "Entities with trait or mechanism evidence", withTraits.length, `${fmt(withTraits.length)} matched entities have direct relation evidence to traits, regulation, or metabolism.`, withTraits);
   addSignal(rows, "Coverage", "Entities with extracted context", withContexts.length, `${fmt(withContexts.length)} matched entities have relation-specific context.`, withContexts);
   if (withMetadata.length) addSignal(rows, "Metadata", "Entities with external metadata", withMetadata.length, "Sequence, ontology, compound, or classifier metadata is available.", withMetadata);
@@ -8127,7 +8127,7 @@ function hypothesisMarkdown(path, index) {
   const start = pathNodeInfo(path.nodes[0]);
   const end = pathNodeInfo(path.nodes[path.nodes.length - 1]);
   const lines = [
-    `# PSFD Hypothesis ${index + 1}`,
+    `# funcMap Hypothesis ${index + 1}`,
     "",
     `**Question:** ${start.label} -> ${end.label}`,
     `**Biological lens:** ${discoverLensLabel(state.discoverLens)}`,
@@ -8150,7 +8150,7 @@ function hypothesisMarkdown(path, index) {
     ...path.edges.map((edge, edgeIndex) => `${edgeIndex + 1}. ${edgeReportText(edge)}`),
     "",
     "## Provenance",
-    `Generated from PSFD visual demo live API data on ${new Date().toISOString()}.`,
+    `Generated from funcMap visual demo live API data on ${new Date().toISOString()}.`,
     "Use the in-page Open buttons to inspect the source event, relation, dependency, or entity records."
   ];
   return `${lines.join("\n")}\n`;
@@ -8272,7 +8272,7 @@ function renderPathExplorer() {
       <div class="hero-title">
         <div>
           <h2>Pathfinder</h2>
-          <p>Build a hypothesis route between two annotated genes, compounds, traits, or ontology concepts across the PSFD papers.</p>
+          <p>Build a hypothesis route between two annotated genes, compounds, traits, or ontology concepts across the funcMap papers.</p>
         </div>
         <div>${badges([`${fmt(stats.entities)} entities`, `${fmt(stats.concepts)} ontology bridges`, `${fmt(stats.dependencies)} event links`])}</div>
       </div>
