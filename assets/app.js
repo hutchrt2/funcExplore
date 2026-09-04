@@ -4909,7 +4909,7 @@ function renderDiscoverWorkbench() {
             <div class="query-box compound-query-box" role="tabpanel" style="display: flex; flex-direction: column; gap: 15px;">
               <div>
                 <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #333;">Step 1: Identify entity type</label>
-                <select id="relationCategoryInput" class="custom-select" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" onchange="state.relationSearchCategory = this.value; render();">
+                <select id="relationCategoryInput" class="custom-select" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" onpointerdown="event.stopPropagation()" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()" onchange="state.relationSearchCategory = this.value; render();">
                   <option value="auto" ${state.relationSearchCategory === "auto" ? "selected" : ""}>Auto-Detect (Any Type)</option>
                   <option value="gene" ${state.relationSearchCategory === "gene" ? "selected" : ""}>Genes & Proteins</option>
                   <option value="compound" ${state.relationSearchCategory === "compound" ? "selected" : ""}>Compounds</option>
@@ -4928,9 +4928,9 @@ function renderDiscoverWorkbench() {
               <div>
                 <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #333;">Step 3: Analysis Type</label>
                 <div style="display: flex; gap: 20px;">
-                  <label><input type="radio" name="analysisType" value="relations" ${state.relationAnalysisType !== "enrichment" ? "checked" : ""} onchange="state.relationAnalysisType = this.value; render();"> Fetch All Relationships</label>
-                  <label><input type="radio" name="analysisType" value="enrichment" ${state.relationAnalysisType === "enrichment" ? "checked" : ""} onchange="state.relationAnalysisType = this.value; render();"> Enrichment Analysis vs Background</label>
-                  <label><input type="radio" name="analysisType" value="both" ${state.relationAnalysisType === "both" ? "checked" : ""} onchange="state.relationAnalysisType = this.value; render();"> Both</label>
+                  <label><input type="radio" name="analysisType" value="relations" ${state.relationAnalysisType !== "enrichment" ? "checked" : ""} onpointerdown="event.stopPropagation()" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()" onchange="state.relationAnalysisType = this.value; render();"> Fetch All Relationships</label>
+                  <label><input type="radio" name="analysisType" value="enrichment" ${state.relationAnalysisType === "enrichment" ? "checked" : ""} onpointerdown="event.stopPropagation()" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()" onchange="state.relationAnalysisType = this.value; render();"> Enrichment Analysis vs Background</label>
+                  <label><input type="radio" name="analysisType" value="both" ${state.relationAnalysisType === "both" ? "checked" : ""} onpointerdown="event.stopPropagation()" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()" onchange="state.relationAnalysisType = this.value; render();"> Both</label>
                 </div>
               </div>
             </div>
