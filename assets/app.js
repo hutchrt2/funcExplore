@@ -52,6 +52,8 @@ const state = {
   relationFastaInput: "",
   relationActiveSubTab: "compound",
   relationSearchMethod: "seq2graph",
+  relationSearchCategory: "auto",
+  relationAnalysisType: "relations",
   relationAttributeFilters: {
     genes: true,
     metabolites: true,
@@ -4904,8 +4906,33 @@ function renderDiscoverWorkbench() {
 
         <div class="relation-tab-content">
           ${state.relationActiveSubTab === "compound" ? `
-            <div class="query-box compound-query-box" role="tabpanel">
-              <textarea id="relationCompoundInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="piperonylic acid&#10;APX1&#10;GABA">${esc(state.relationCompoundInput)}</textarea>
+            <div class="query-box compound-query-box" role="tabpanel" style="display: flex; flex-direction: column; gap: 15px;">
+              <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #333;">Step 1: Identify entity type</label>
+                <select id="relationCategoryInput" class="custom-select" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" onchange="state.relationSearchCategory = this.value; render();">
+                  <option value="auto" ${state.relationSearchCategory === "auto" ? "selected" : ""}>Auto-Detect (Any Type)</option>
+                  <option value="gene" ${state.relationSearchCategory === "gene" ? "selected" : ""}>Genes & Proteins</option>
+                  <option value="compound" ${state.relationSearchCategory === "compound" ? "selected" : ""}>Compounds</option>
+                  <option value="taxon" ${state.relationSearchCategory === "taxon" ? "selected" : ""}>Species & Taxa</option>
+                  <option value="trait" ${state.relationSearchCategory === "trait" ? "selected" : ""}>Traits & Phenotypes</option>
+                  <option value="pathway" ${state.relationSearchCategory === "pathway" ? "selected" : ""}>Pathways</option>
+                  <option value="anatomy" ${state.relationSearchCategory === "anatomy" ? "selected" : ""}>Anatomy & Organs</option>
+                </select>
+              </div>
+
+              <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #333;">Step 2: Paste a list of entities (only 1 type at a time)</label>
+                <textarea id="relationCompoundInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="piperonylic acid&#10;APX1&#10;GABA" style="width: 100%; min-height: 100px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">${esc(state.relationCompoundInput)}</textarea>
+              </div>
+
+              <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #333;">Step 3: Analysis Type</label>
+                <div style="display: flex; gap: 20px;">
+                  <label><input type="radio" name="analysisType" value="relations" ${state.relationAnalysisType !== "enrichment" ? "checked" : ""} onchange="state.relationAnalysisType = this.value; render();"> Fetch All Relationships</label>
+                  <label><input type="radio" name="analysisType" value="enrichment" ${state.relationAnalysisType === "enrichment" ? "checked" : ""} onchange="state.relationAnalysisType = this.value; render();"> Enrichment Analysis vs Background</label>
+                  <label><input type="radio" name="analysisType" value="both" ${state.relationAnalysisType === "both" ? "checked" : ""} onchange="state.relationAnalysisType = this.value; render();"> Both</label>
+                </div>
+              </div>
             </div>
           ` : state.relationActiveSubTab === "enrichment" ? `
             <div class="query-box enrichment-query-box" role="tabpanel">
@@ -5811,7 +5838,7 @@ async function relationCompoundEntities() {
   const response = await fetch(`${window.PSMM_API_BASE}/api/resolve_entities`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
-    body: JSON.stringify({ terms: terms, category: "auto" })
+    body: JSON.stringify({ terms: terms, category: state.relationSearchCategory || "auto" })
   });
   if (!response.ok) throw new Error("Failed to resolve compound entities.");
   
