@@ -63,7 +63,7 @@ const state = {
     experimental_conditions: true,
     plant_traits: true,
     molecular_traits: true,
-    human_traits: false
+    human_traits: true
   },
   relationExtractionResults: [],
   relationExtractionStatus: "",
@@ -4908,7 +4908,7 @@ function renderDiscoverWorkbench() {
           ${state.relationActiveSubTab === "compound" ? `
             <div class="query-box compound-query-box" role="tabpanel" style="display: flex; flex-direction: column; gap: 15px;">
               <div>
-                <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #333;">Step 1: Identify entity type</label>
+                <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #333;">Identify entity type</label>
                 <select id="relationCategoryInput" class="custom-select" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" onchange="state.relationSearchCategory = this.value;">
                   <option value="auto" ${state.relationSearchCategory === "auto" ? "selected" : ""}>Auto-Detect (Any Type)</option>
                   <option value="gene" ${state.relationSearchCategory === "gene" ? "selected" : ""}>Genes & Proteins</option>
@@ -4921,16 +4921,34 @@ function renderDiscoverWorkbench() {
               </div>
 
               <div>
-                <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #333;">Step 2: Paste a list of entities (only 1 type at a time)</label>
+                <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #333;">Paste a list of entities (only 1 type at a time)</label>
                 <textarea id="relationCompoundInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="piperonylic acid&#10;APX1&#10;GABA" style="width: 100%; min-height: 100px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">${esc(state.relationCompoundInput)}</textarea>
+                
+                <div class="annotation-examples sequence-examples" style="margin-top: 8px; justify-content: flex-start;">
+                  <button class="annotation-example" type="button" data-sequence-example="compound">Compound example</button>
+                  <button class="annotation-example" type="button" data-sequence-example="exact-fasta">Exact FASTA</button>
+                  <button class="annotation-example" type="button" data-sequence-example="homolog-fasta">Homolog FASTA</button>
+                  <button class="annotation-example" type="button" data-sequence-example="mixed">Mixed example</button>
+                </div>
               </div>
 
               <div>
-                <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #333;">Step 3: Analysis Type</label>
-                <div style="display: flex; gap: 20px;">
-                  <label><input type="radio" name="analysisType" value="relations" ${state.relationAnalysisType !== "enrichment" ? "checked" : ""} onchange="state.relationAnalysisType = this.value;"> Fetch All Relationships</label>
-                  <label><input type="radio" name="analysisType" value="enrichment" ${state.relationAnalysisType === "enrichment" ? "checked" : ""} onchange="state.relationAnalysisType = this.value;"> Enrichment Analysis vs Background</label>
-                  <label><input type="radio" name="analysisType" value="both" ${state.relationAnalysisType === "both" ? "checked" : ""} onchange="state.relationAnalysisType = this.value;"> Both</label>
+                <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #333;">Analysis Type</label>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                  <label style="display: flex; flex-direction: column;">
+                    <span style="display: flex; align-items: center; gap: 8px;">
+                      <input type="radio" name="analysisType" value="relations" ${state.relationAnalysisType !== "both" ? "checked" : ""} onchange="state.relationAnalysisType = this.value;"> 
+                      Fetch All Relationships
+                    </span>
+                    <small style="margin-left: 24px; color: #666; font-weight: normal;">Fetch all relationships - all triples and/or context where the normalized version of the entity exists will be extracted from the database.</small>
+                  </label>
+                  <label style="display: flex; flex-direction: column;">
+                    <span style="display: flex; align-items: center; gap: 8px;">
+                      <input type="radio" name="analysisType" value="both" ${state.relationAnalysisType === "both" ? "checked" : ""} onchange="state.relationAnalysisType = this.value;"> 
+                      Fetch all relationships and perform enrichment analysis
+                    </span>
+                    <small style="margin-left: 24px; color: #666; font-weight: normal;">After all relationships are extracted, Fisher's Exact Test and Chi-Squared Test will be used to determine which relationships are enriched in the user-input entity list vs. entities of the same type in our database.</small>
+                  </label>
                 </div>
               </div>
             </div>
@@ -5002,7 +5020,7 @@ function renderDiscoverWorkbench() {
 
         <div class="attribute-filter-panel">
           <div>
-            <h4>Choose PCO/funcMap attributes to extract for the submitted entities</h4>
+            <h4>Choose attributes to extract for the submitted entities</h4>
             <small>Only triples where the submitted compound or matched protein is entity 1 or entity 2 are exported.</small>
           </div>
           <div class="attribute-grid">
@@ -5017,15 +5035,9 @@ function renderDiscoverWorkbench() {
             ${relationAttributeCheckbox("human_traits", "Human traits")}
           </div>
         </div>
-        <div class="annotation-examples sequence-examples">
-          <button class="annotation-example" type="button" data-sequence-example="compound">Compound example</button>
-          <button class="annotation-example" type="button" data-sequence-example="exact-fasta">Exact FASTA</button>
-          <button class="annotation-example" type="button" data-sequence-example="homolog-fasta">Homolog FASTA</button>
-          <button class="annotation-example" type="button" data-sequence-example="mixed">Mixed example</button>
-        </div>
         <div class="annotation-actions">
-          <button class="mini-button primary-action" type="button" data-relation-extract-action="extract">Extract relationships</button>
-          <button class="mini-button" type="button" data-relation-extract-action="download" ${state.relationExtractionResults.length ? "" : "disabled"}>Download tab-delimited file</button>
+          <button class="mini-button primary-action" type="button" data-relation-extract-action="extract">Execute</button>
+          ${state.relationExtractionResults.length ? `<button class="mini-button" type="button" data-relation-extract-action="download">Download tab-delimited file</button>` : ""}
         </div>
         <div class="annotation-status ${(state.relationExtractionStatus || "").includes("...") ? "loading" : ""}">${esc(state.relationExtractionStatus || "Submit compound names or protein FASTA sequences to extract funcMap relationships.")}</div>
         ${renderRelationExtractionResults()}
@@ -5076,12 +5088,7 @@ function getCollapsedFastaMatches(matches) {
 
 function renderRelationExtractionResults() {
   if (!state.relationExtractionResults.length && !state.relationSequenceMatches.length) {
-    return `
-      <div class="annotation-empty compact relationship-empty-state">
-        <strong>Ready for extraction</strong>
-        <span>Submit compound names or FASTA sequences to see grouped relationships. The download keeps the full tab-delimited file.</span>
-      </div>
-    `;
+    return ``;
   }
   const itemsPerPage = 100;
   const filteredRows = relationFilteredExtractionResults();
@@ -6089,7 +6096,7 @@ async function setRelationExtractionExample(kind) {
     ? "Loaded an exact OsMYB55 FASTA record from the funcMap-linked sequence database."
     : kind === "homolog-fasta"
       ? "Loaded a non-identical OsMYB55-like FASTA query derived from a funcMap-linked sequence to demonstrate homolog matching."
-      : "Example loaded. Click Extract relationships to retrieve endpoint triples from the funcMap data.";
+      : "Example loaded. Click Execute to retrieve endpoint triples from the funcMap data.";
   render();
 }
 
@@ -6198,7 +6205,7 @@ function refreshAnnotationReadyState() {
     ]);
   }
   if (!state.annotationStatus || /loading annotation database/i.test(state.annotationStatus)) {
-    setAnnotationStatusText("Database ready. Click Annotate when your list is ready.");
+    setAnnotationStatusText("Database ready. Click Execute when your list is ready.");
   }
 }
 
