@@ -4931,26 +4931,6 @@ function renderDiscoverWorkbench() {
                   <button class="annotation-example" type="button" data-sequence-example="mixed">Mixed example</button>
                 </div>
               </div>
-
-              <div>
-                <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #333;">Analysis Type</label>
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                  <label style="display: flex; flex-direction: column;">
-                    <span style="display: flex; align-items: center; gap: 8px;">
-                      <input type="radio" name="analysisType" value="relations" ${state.relationAnalysisType !== "both" ? "checked" : ""} onchange="state.relationAnalysisType = this.value;"> 
-                      Fetch All Relationships
-                    </span>
-                    <small style="margin-left: 24px; color: #666; font-weight: normal;">Fetch all relationships - all triples and/or context where the normalized version of the entity exists will be extracted from the database.</small>
-                  </label>
-                  <label style="display: flex; flex-direction: column;">
-                    <span style="display: flex; align-items: center; gap: 8px;">
-                      <input type="radio" name="analysisType" value="both" ${state.relationAnalysisType === "both" ? "checked" : ""} onchange="state.relationAnalysisType = this.value;"> 
-                      Fetch all relationships and perform enrichment analysis
-                    </span>
-                    <small style="margin-left: 24px; color: #666; font-weight: normal;">After all relationships are extracted, Fisher's Exact Test and Chi-Squared Test will be used to determine which relationships are enriched in the user-input entity list vs. entities of the same type in our database.</small>
-                  </label>
-                </div>
-              </div>
             </div>
           ` : state.relationActiveSubTab === "enrichment" ? `
             <div class="query-box enrichment-query-box" role="tabpanel">
