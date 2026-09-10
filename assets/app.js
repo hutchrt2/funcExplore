@@ -52,7 +52,7 @@ const state = {
   relationFastaInput: "",
   relationActiveSubTab: "compound",
   relationSearchMethod: "seq2graph",
-  relationSearchCategory: "auto",
+  relationSearchCategory: "compound",
   relationAnalysisType: "relations",
   relationAttributeFilters: {
     genes: true,
@@ -4910,7 +4910,6 @@ function renderDiscoverWorkbench() {
               <div>
                 <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #333;">Identify entity type</label>
                 <select id="relationCategoryInput" class="custom-select" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" onchange="state.relationSearchCategory = this.value;">
-                  <option value="auto" ${state.relationSearchCategory === "auto" ? "selected" : ""}>Auto-Detect (Any Type)</option>
                   <option value="gene" ${state.relationSearchCategory === "gene" ? "selected" : ""}>Genes & Proteins</option>
                   <option value="compound" ${state.relationSearchCategory === "compound" ? "selected" : ""}>Compounds</option>
                   <option value="taxon" ${state.relationSearchCategory === "taxon" ? "selected" : ""}>Species & Taxa</option>
@@ -4928,7 +4927,6 @@ function renderDiscoverWorkbench() {
                   <button class="annotation-example" type="button" data-sequence-example="compound">Compound example</button>
                   <button class="annotation-example" type="button" data-sequence-example="exact-fasta">Exact FASTA</button>
                   <button class="annotation-example" type="button" data-sequence-example="homolog-fasta">Homolog FASTA</button>
-                  <button class="annotation-example" type="button" data-sequence-example="mixed">Mixed example</button>
                 </div>
               </div>
             </div>
